@@ -1,0 +1,97 @@
+version: "3.5"
+
+services:
+  app:
+    image: lscr.io/linuxserver/homeassistant
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - bridge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
+      - DOCKER_MODS=linuxserver/mods:homeassistant-hacs
+    volumes:
+      - app_conf:/config
+    networks:
+      default:
+      proxy_apps:
+      host_mode:
+        ipv4_address: ${HASS_IP}
+    labels:
+      backups: "true"
+
+  db:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      default:
+    labels:
+      backups: "true"
+
+  broker:
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    volumes:
+      - broker_data:/mosquitto/data
+      - broker_log:/mosquitto/log
+      - $PWD/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      default:
+    labels:
+      backups: "true"
+
+  bridge:
+    image: koenkk/zigbee2mqtt
+    restart: unless-stopped
+    depends_on:
+      - broker
+    environment:
+      - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=mqtt://broker:1883
+      - ZIGBEE2MQTT_CONFIG_FRONTEND_PORT=8080
+      - ZIGBEE2MQTT_CONFIG_HOMEASSISTANT=true
+      - ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_LEVEL=warn
+      - TZ
+    volumes:
+      - /run/udev:/run/udev:ro
+      - bridge_data:/app/data
+    networks:
+      default:
+      proxy_apps:
+    labels:
+      backups: "true"
+    group_add:
+      - dialout
+    user: 1000:1000
+    devices:
+      - ${ZIGBEE_DEVICE}
+
+volumes:
+  app_conf:
+  db_data:
+  broker_data:
+  broker_log:
+  bridge_data:
+
+networks:
+  proxy_apps:
+    name: proxy_apps
+    external: true
+
+  host_mode:
+    name: host_mode
+    driver: macvlan
+    driver_opts:
+      parent: ${HOSTINTERFACE}
+    ipam:
+      config:
+        - subnet: ${SUBNET}

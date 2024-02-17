@@ -1,0 +1,21 @@
+services:
+  esphome:
+    image: esphome/esphome
+    restart: unless-stopped
+    environment:
+      - TZ
+    volumes:
+      - esphome_conf:/config
+    labels:
+      backups: "true"
+    networks:
+      default:
+      proxy_apps:
+      host_mode:
+        ipv4_address: ${ESPHOME_IP}
+    dns:
+      - "1.1.1.1"
+      - "1.0.0.1"
+
+volumes:
+  esphome_conf:
