@@ -6,8 +6,6 @@ services:
       - TZ
     volumes:
       - esphome_conf:/config
-    labels:
-      backups: "true"
     networks:
       default:
       proxy_apps:
