@@ -50,7 +50,7 @@ services:
       default:
 
   bridge:
-    image: koenkk/zigbee2mqtt:1.35.1
+    image: koenkk/zigbee2mqtt
     restart: unless-stopped
     depends_on:
       - broker
