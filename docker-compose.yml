@@ -21,14 +21,14 @@ services:
         ipv4_address: ${HASS_IP}
 
   db:
-    image: postgres:17-alpine
+    image: pgautoupgrade/pgautoupgrade:latest
     restart: unless-stopped
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql
     networks:
       default:
     labels:
