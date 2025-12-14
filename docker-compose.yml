@@ -35,7 +35,7 @@ services:
       ofelia.restart: "true"
       ofelia.enabled: "true"
       ofelia.job-exec.homeassistantdbbackup.schedule: "0 0 1 * * *"
-      ofelia.job-exec.homeassistantdbbackup.command: "sh -c 'pg_dumpall -U $POSTGRES_USER -f /var/lib/postgresql/data/backup.sql'"
+      ofelia.job-exec.homeassistantdbbackup.command: "sh -c 'pg_dumpall -U $POSTGRES_USER -f /var/lib/postgresql/backup.sql'"
 
   broker:
     image: eclipse-mosquitto:latest
