@@ -50,6 +50,9 @@ services:
   bridge:
     image: koenkk/zigbee2mqtt
     restart: unless-stopped
+    group_add:
+      - dialout
+    user: 1000:1000
     depends_on:
       - broker
     environment:
@@ -59,16 +62,10 @@ services:
       - ZIGBEE2MQTT_CONFIG_ADVANCED_LAST_SEEN=ISO_8601
       - TZ
     volumes:
-      - /run/udev:/run/udev:ro
       - bridge_data:/app/data
     networks:
       default:
       proxy_apps:
-    group_add:
-      - dialout
-    user: 1000:1000
-    devices:
-      - ${ZIGBEE_DEVICE}
 
 volumes:
   app_conf:
