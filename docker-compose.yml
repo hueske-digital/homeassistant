@@ -21,21 +21,21 @@ services:
         ipv4_address: ${HASS_IP}
 
   db:
-    image: postgres:17-alpine
+    image: pgautoupgrade/pgautoupgrade:latest
     restart: unless-stopped
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql
     networks:
       default:
     labels:
       - ofelia.restart=true
       - ofelia.enabled=true
       - "ofelia.job-exec.${COMPOSE_PROJECT_NAME}dbbackup.schedule=0 0 1 * * *"
-      - "ofelia.job-exec.${COMPOSE_PROJECT_NAME}dbbackup.command=sh -c 'pg_dumpall -U $POSTGRES_USER -f /var/lib/postgresql/backup.sql'"
+      - "ofelia.job-exec.${COMPOSE_PROJECT_NAME}dbbackup.command=sh -c 'pg_dumpall -U $POSTGRES_USER -f -f /var/lib/postgresql/backup.sql'"
 
   broker:
     image: eclipse-mosquitto:latest
@@ -49,12 +49,15 @@ services:
 
   bridge:
     image: koenkk/zigbee2mqtt
-
     restart: unless-stopped
+    group_add:
+      - dialout
+    user: 1000:1000
     depends_on:
       - broker
     environment:
       - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=mqtt://broker:1883
+      - ZIGBEE2MQTT_CONFIG_FRONTEND_PORT=8080
       - ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_LEVEL=warning
       - ZIGBEE2MQTT_CONFIG_ADVANCED_LAST_SEEN=ISO_8601
       - TZ
