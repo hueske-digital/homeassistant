@@ -12,11 +12,14 @@ services:
       - TZ
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
       - DOCKER_MODS=linuxserver/mods:homeassistant-hacs
+      - CADDY_DOMAIN=${CADDY_DOMAIN_HASS}
+      - CADDY_TYPE=external
+      - CADDY_PORT=8123
     volumes:
       - app_conf:/config
     networks:
       default:
-      proxy_apps:
+      caddy:
       host_mode:
         ipv4_address: ${HASS_IP}
 
@@ -61,11 +64,14 @@ services:
       - ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_LEVEL=warning
       - ZIGBEE2MQTT_CONFIG_ADVANCED_LAST_SEEN=ISO_8601
       - TZ
+      - CADDY_DOMAIN=${CADDY_DOMAIN_Z2M}
+      - CADDY_TYPE=${CADDY_TYPE:-internal}
+      - CADDY_PORT=${CADDY_PORT_Z2M:-8080}
     volumes:
       - bridge_data:/app/data
     networks:
       default:
-      proxy_apps:
+      caddy:
 
 volumes:
   app_conf:
@@ -75,9 +81,7 @@ volumes:
   bridge_data:
 
 networks:
-  proxy_apps:
-    name: proxy_apps
-    external: true
+  caddy:
 
   host_mode:
     name: host_mode
