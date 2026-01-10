@@ -13,7 +13,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
       - DOCKER_MODS=linuxserver/mods:homeassistant-hacs
       - CADDY_DOMAIN=${CADDY_DOMAIN_HASS}
-      - CADDY_TYPE=external
+      - CADDY_TYPE=${CADDY_TYPE_HASS:-external}
       - CADDY_PORT=8123
     volumes:
       - app_conf:/config
