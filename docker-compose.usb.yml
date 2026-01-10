@@ -1,0 +1,4 @@
+services:
+  bridge:
+    devices:
+      - ${ZIGBEE_DEVICE}:/dev/ttyUSB0
