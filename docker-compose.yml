@@ -65,10 +65,10 @@ services:
       - ZIGBEE2MQTT_CONFIG_ADVANCED_LAST_SEEN=ISO_8601
       - TZ
       - CADDY_DOMAIN=${CADDY_DOMAIN_Z2M}
-      - CADDY_TYPE=${CADDY_TYPE:-internal}
+      - CADDY_TYPE=${CADDY_TYPE_Z2M:-internal}
       - CADDY_PORT=${CADDY_PORT_Z2M:-8080}
-      - CADDY_AUTH==${CADDY_AUTH:-}
-      - CADDY_AUTH_GROUPS=${CADDY_AUTH_GROUPS:-}
+      - CADDY_AUTH==${CADDY_AUTH_Z2M:-}
+      - CADDY_AUTH_GROUPS=${CADDY_AUTH_GROUPS_Z2M:-}
     volumes:
       - bridge_data:/app/data
     networks:
